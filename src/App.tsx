@@ -17,7 +17,9 @@ import {
   Cpu,
   MoreVertical,
   Edit2,
-  Trash2
+  Trash2,
+  Database,
+  Cloud
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
