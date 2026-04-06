@@ -16,7 +16,18 @@ import {
   Terminal,
   Cpu,
   Database,
-  Cloud
+  Cloud,
+  Layers,
+  Globe,
+  Server,
+  Shield,
+  Zap,
+  Box,
+  Layout,
+  Code,
+  MoreVertical,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -28,7 +39,10 @@ import { GraphVisualizer } from './components/GraphVisualizer';
 
 // Mock data for initial view
 const INITIAL_VAULT: VaultState = {
+  id: "initial-vault",
   name: "Hossted Tech Wiki",
+  icon: "Database",
+  color: "#2563eb",
   files: [
     {
       name: "Getting Started.md",
@@ -60,8 +74,60 @@ const INITIAL_VAULT: VaultState = {
   openFiles: ["Getting Started.md"]
 };
 
+const AVAILABLE_ICONS = [
+  { name: 'Database', icon: Database },
+  { name: 'Server', icon: Server },
+  { name: 'Cloud', icon: Cloud },
+  { name: 'Shield', icon: Shield },
+  { name: 'Zap', icon: Zap },
+  { name: 'Box', icon: Box },
+  { name: 'Layers', icon: Layers },
+  { name: 'Globe', icon: Globe },
+  { name: 'Terminal', icon: Terminal },
+  { name: 'Cpu', icon: Cpu },
+  { name: 'Layout', icon: Layout },
+  { name: 'Code', icon: Code },
+];
+
+const AVAILABLE_COLORS = [
+  '#2563eb', // Blue
+  '#10b981', // Green
+  '#f59e0b', // Amber
+  '#ef4444', // Red
+  '#8b5cf6', // Violet
+  '#ec4899', // Pink
+  '#06b6d4', // Cyan
+  '#f97316', // Orange
+];
+
 export default function App() {
-  const [vault, setVault] = useState<VaultState>(INITIAL_VAULT);
+  const [vaults, setVaults] = useState<VaultState[]>([INITIAL_VAULT]);
+  const [activeVaultId, setActiveVaultId] = useState<string>(INITIAL_VAULT.id);
+  
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingVaultId, setEditingVaultId] = useState<string | null>(null);
+  
+  const [newVaultName, setNewVaultName] = useState("");
+  const [newVaultIcon, setNewVaultIcon] = useState("Database");
+  const [newVaultColor, setNewVaultColor] = useState("#2563eb");
+
+  const vault = useMemo(() => 
+    vaults.find(v => v.id === activeVaultId) || vaults[0], 
+  [vaults, activeVaultId]);
+
+  const editingVault = useMemo(() => 
+    vaults.find(v => v.id === editingVaultId),
+  [vaults, editingVaultId]);
+
+  useEffect(() => {
+    if (editingVault) {
+      setNewVaultName(editingVault.name);
+      setNewVaultIcon(editingVault.icon);
+      setNewVaultColor(editingVault.color);
+    }
+  }, [editingVault]);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["OpenSource Technologies"]));
@@ -131,27 +197,48 @@ export default function App() {
   };
 
   const openFile = (path: string) => {
-    setVault(prev => ({
-      ...prev,
+    setVaults(prev => prev.map(v => v.id === activeVaultId ? {
+      ...v,
       activeFilePath: path,
-      openFiles: prev.openFiles.includes(path) ? prev.openFiles : [...prev.openFiles, path]
-    }));
+      openFiles: v.openFiles.includes(path) ? v.openFiles : [...v.openFiles, path]
+    } : v));
   };
 
   const closeFile = (e: React.MouseEvent, path: string) => {
     e.stopPropagation();
-    setVault(prev => {
-      const newOpenFiles = prev.openFiles.filter(p => p !== path);
-      let newActive = prev.activeFilePath;
-      if (prev.activeFilePath === path) {
+    setVaults(prev => prev.map(v => v.id === activeVaultId ? (() => {
+      const newOpenFiles = v.openFiles.filter(p => p !== path);
+      let newActive = v.activeFilePath;
+      if (v.activeFilePath === path) {
         newActive = newOpenFiles.length > 0 ? newOpenFiles[newOpenFiles.length - 1] : null;
       }
       return {
-        ...prev,
+        ...v,
         openFiles: newOpenFiles,
         activeFilePath: newActive
       };
-    });
+    })() : v));
+  };
+
+  const updateVault = () => {
+    if (!editingVaultId) return;
+    setVaults(prev => prev.map(v => v.id === editingVaultId ? {
+      ...v,
+      name: newVaultName,
+      icon: newVaultIcon,
+      color: newVaultColor
+    } : v));
+    setIsEditModalOpen(false);
+    setEditingVaultId(null);
+  };
+
+  const removeVault = (id: string) => {
+    if (vaults.length <= 1) return;
+    setVaults(prev => prev.filter(v => v.id !== id));
+    if (activeVaultId === id) {
+      const remaining = vaults.filter(v => v.id !== id);
+      setActiveVaultId(remaining[0].id);
+    }
   };
 
   const handleFolderUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,12 +293,21 @@ export default function App() {
 
     sortFiles(root);
 
-    setVault({
-      name: vaultName,
+    const newVaultId = `vault-${Date.now()}`;
+    const newVault: VaultState = {
+      id: newVaultId,
+      name: newVaultName || vaultName,
+      icon: newVaultIcon,
+      color: newVaultColor,
       files: root,
       activeFilePath: root[0]?.type === 'file' ? root[0].path : (root[0]?.children?.[0]?.path || null),
       openFiles: root[0]?.type === 'file' ? [root[0].path] : (root[0]?.children?.[0] ? [root[0].children[0].path] : [])
-    });
+    };
+
+    setVaults(prev => [...prev, newVault]);
+    setActiveVaultId(newVaultId);
+    setIsAddModalOpen(false);
+    setNewVaultName("");
   };
 
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
@@ -239,6 +335,95 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-full bg-hossted-dark text-hossted-text overflow-hidden">
+      {/* Vault Rail (Leftmost) */}
+      <div className="w-20 bg-hossted-dark border-r border-hossted-border flex flex-col items-center py-6 gap-6 shrink-0">
+        <div className="w-14 h-14 flex items-center justify-center mb-2">
+          <img 
+            src="https://hossted.com/wp-content/uploads/2024/01/ologogreen--150x150.png" 
+            alt="Hossted Logo" 
+            className="w-full h-full object-contain"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        
+        <div className="flex-1 flex flex-col items-center gap-4 w-full px-2">
+          {vaults.map(v => {
+            const IconComponent = AVAILABLE_ICONS.find(i => i.name === v.icon)?.icon || Database;
+            return (
+              <div key={v.id} className="relative group/vault">
+                <button
+                  onClick={() => setActiveVaultId(v.id)}
+                  title={v.name}
+                  className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative",
+                    activeVaultId === v.id 
+                      ? "text-white shadow-lg" 
+                      : "bg-hossted-sidebar text-hossted-text-muted hover:bg-hossted-border hover:text-hossted-text"
+                  )}
+                  style={{ 
+                    backgroundColor: activeVaultId === v.id ? v.color : undefined,
+                    boxShadow: activeVaultId === v.id ? `0 10px 15px -3px ${v.color}33` : undefined
+                  }}
+                >
+                  <IconComponent className="w-6 h-6" />
+                  {activeVaultId === v.id && (
+                    <motion.div 
+                      layoutId="active-vault-indicator"
+                      className="absolute -left-2 w-1 h-8 rounded-r-full"
+                      style={{ backgroundColor: v.color }}
+                    />
+                  )}
+                  <div className="absolute left-16 px-2 py-1 bg-hossted-sidebar border border-hossted-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                    {v.name}
+                  </div>
+                </button>
+                
+                {/* Vault Actions Menu */}
+                <div className="absolute -right-2 -top-2 opacity-0 group-hover/vault:opacity-100 transition-opacity z-10 flex gap-1">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingVaultId(v.id);
+                      setIsEditModalOpen(true);
+                    }}
+                    className="p-1.5 bg-hossted-sidebar border border-hossted-border rounded-lg hover:bg-hossted-border text-hossted-text-muted hover:text-hossted-primary transition-colors shadow-xl"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                  {vaults.length > 1 && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeVault(v.id);
+                      }}
+                      className="p-1.5 bg-hossted-sidebar border border-hossted-border rounded-lg hover:bg-hossted-border text-hossted-text-muted hover:text-red-500 transition-colors shadow-xl"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          
+          <button 
+            onClick={() => {
+              setNewVaultName("");
+              setNewVaultIcon("Database");
+              setNewVaultColor("#2563eb");
+              setIsAddModalOpen(true);
+            }}
+            className="w-12 h-12 rounded-xl bg-hossted-sidebar border border-dashed border-hossted-border flex items-center justify-center text-hossted-text-muted hover:bg-hossted-border hover:text-hossted-text cursor-pointer transition-all"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 text-hossted-text-muted">
+          <Settings className="w-5 h-5 hover:text-hossted-primary cursor-pointer transition-colors" />
+        </div>
+      </div>
+
       {/* Sidebar */}
       <AnimatePresence initial={false}>
         {isSidebarOpen && (
@@ -250,11 +435,11 @@ export default function App() {
           >
             {/* Sidebar Header */}
             <div className="p-4 flex items-center justify-between border-b border-hossted-border">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-hossted-primary rounded-lg flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col min-w-0">
+                  <h1 className="font-bold text-sm truncate leading-tight">{vault.name}</h1>
+                  <span className="text-[10px] text-hossted-text-muted uppercase tracking-wider">Vault</span>
                 </div>
-                <h1 className="font-semibold truncate max-w-[140px]">{vault.name}</h1>
               </div>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
@@ -369,14 +554,57 @@ export default function App() {
                 animate={{ opacity: 1, y: 0 }}
                 className="markdown-body"
               >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {activeFile.content || ""}
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    a: ({ node, ...props }) => {
+                      const href = props.href || "";
+                      // Check if it's a wikilink (internal link)
+                      if (!href.startsWith('http') && !href.startsWith('#')) {
+                        return (
+                          <a 
+                            {...props} 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              openFile(href);
+                            }}
+                            className="cursor-pointer text-hossted-primary hover:underline"
+                          >
+                            {props.children}
+                          </a>
+                        );
+                      }
+                      return <a {...props} target="_blank" rel="noopener noreferrer" />;
+                    }
+                  }}
+                >
+                  {(activeFile.content || "").replace(/\[\[(.*?)\]\]/g, (match, p1) => {
+                    const [target, label] = p1.split('|');
+                    // Find the actual file path for the target name
+                    const allFiles: VaultFile[] = [];
+                    const flatten = (files: VaultFile[]) => {
+                      files.forEach(f => {
+                        if (f.type === 'file') allFiles.push(f);
+                        if (f.children) flatten(f.children);
+                      });
+                    };
+                    flatten(vault.files);
+                    
+                    const found = allFiles.find(f => f.name.replace('.md', '') === target || f.path === target);
+                    const href = found ? found.path : target;
+                    return `[${label || target}](${href})`;
+                  })}
                 </ReactMarkdown>
               </motion.div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-hossted-text-muted gap-4 opacity-50">
-                <BookOpen className="w-16 h-16" />
-                <p className="text-lg">Select a file to view its content</p>
+              <div className="h-full flex flex-col items-center justify-center text-hossted-text-muted gap-8 opacity-50">
+                <img 
+                  src="https://hossted.com/wp-content/uploads/2024/01/ologogreen--150x150.png" 
+                  alt="Hossted Logo" 
+                  className="w-48 h-48 object-contain"
+                  referrerPolicy="no-referrer"
+                />
+                <p className="text-xl">Select a file to view its content</p>
                 <div className="flex gap-4 mt-4">
                   <div className="flex flex-col items-center gap-2 p-4 border border-hossted-border rounded-xl w-32">
                     <Database className="w-6 h-6" />
@@ -484,6 +712,116 @@ export default function App() {
               </div>
             </div>
           </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Add/Edit Vault Modal */}
+      <AnimatePresence>
+        {(isAddModalOpen || isEditModalOpen) && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-hossted-sidebar border border-hossted-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+            >
+              <div className="p-6 border-b border-hossted-border flex items-center justify-between">
+                <h2 className="text-xl font-bold">{isEditModalOpen ? 'Edit Technology' : 'Add New Technology'}</h2>
+                <button 
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setIsEditModalOpen(false);
+                    setEditingVaultId(null);
+                  }}
+                  className="p-2 hover:bg-hossted-border rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-hossted-text-muted" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Name Input */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Technology Name</label>
+                  <input 
+                    type="text"
+                    placeholder="e.g. Docker Guide"
+                    value={newVaultName}
+                    onChange={(e) => setNewVaultName(e.target.value)}
+                    className="w-full bg-hossted-dark border border-hossted-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-hossted-primary transition-colors"
+                  />
+                </div>
+
+                {/* Icon Selection */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Choose Icon</label>
+                  <div className="grid grid-cols-6 gap-2">
+                    {AVAILABLE_ICONS.map(({ name, icon: Icon }) => (
+                      <button
+                        key={name}
+                        onClick={() => setNewVaultIcon(name)}
+                        className={cn(
+                          "aspect-square flex items-center justify-center rounded-xl border transition-all",
+                          newVaultIcon === name 
+                            ? "bg-hossted-primary/20 border-hossted-primary text-hossted-primary" 
+                            : "bg-hossted-dark border-hossted-border text-hossted-text-muted hover:border-hossted-text-muted"
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Color Selection */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Choose Color</label>
+                  <div className="flex flex-wrap gap-3">
+                    {AVAILABLE_COLORS.map(color => (
+                      <button
+                        key={color}
+                        onClick={() => setNewVaultColor(color)}
+                        className={cn(
+                          "w-8 h-8 rounded-full border-2 transition-all",
+                          newVaultColor === color 
+                            ? "border-white scale-110 shadow-lg" 
+                            : "border-transparent hover:scale-105"
+                        )}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 bg-hossted-dark/50 border-t border-hossted-border">
+                {isEditModalOpen ? (
+                  <button 
+                    onClick={updateVault}
+                    className="w-full py-4 px-6 bg-hossted-primary hover:bg-hossted-primary/90 text-white rounded-xl transition-all font-bold shadow-lg shadow-hossted-primary/20"
+                  >
+                    Save Changes
+                  </button>
+                ) : (
+                  <>
+                    <label className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-hossted-primary hover:bg-hossted-primary/90 text-white rounded-xl cursor-pointer transition-all font-bold shadow-lg shadow-hossted-primary/20">
+                      <Upload className="w-5 h-5" />
+                      Select Obsidian Folder
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        {...({ webkitdirectory: "", directory: "" } as any)} 
+                        onChange={handleFolderUpload}
+                      />
+                    </label>
+                    <p className="text-[10px] text-hossted-text-muted text-center mt-3">
+                      Select your Obsidian vault folder to import all markdown files.
+                    </p>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

@@ -7,7 +7,10 @@ export interface VaultFile {
 }
 
 export interface VaultState {
+  id: string;
   name: string;
+  icon: string; // Lucide icon name
+  color: string; // Hex color
   files: VaultFile[];
   activeFilePath: string | null;
   openFiles: string[]; // Paths of open files
