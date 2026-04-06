@@ -355,9 +355,9 @@ export default function App() {
                   onClick={() => setActiveVaultId(v.id)}
                   title={v.name}
                   className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative",
+                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative border border-hossted-border",
                     activeVaultId === v.id 
-                      ? "text-white shadow-lg" 
+                      ? "text-white shadow-lg border-transparent" 
                       : "bg-hossted-sidebar text-hossted-text-muted hover:bg-hossted-border hover:text-hossted-text"
                   )}
                   style={{ 
@@ -373,7 +373,7 @@ export default function App() {
                       style={{ backgroundColor: v.color }}
                     />
                   )}
-                  <div className="absolute left-16 px-2 py-1 bg-hossted-sidebar border border-hossted-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                  <div className="absolute left-16 px-2 py-1 bg-hossted-sidebar border border-hossted-sidebar-border rounded text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-hossted-sidebar-text">
                     {v.name}
                   </div>
                 </button>
@@ -386,7 +386,7 @@ export default function App() {
                       setEditingVaultId(v.id);
                       setIsEditModalOpen(true);
                     }}
-                    className="p-1.5 bg-hossted-sidebar border border-hossted-border rounded-lg hover:bg-hossted-border text-hossted-text-muted hover:text-hossted-primary transition-colors shadow-xl"
+                    className="p-1.5 bg-hossted-sidebar border border-hossted-sidebar-border rounded-lg hover:bg-hossted-sidebar-border text-hossted-sidebar-text-muted hover:text-hossted-primary transition-colors shadow-xl"
                   >
                     <Edit2 className="w-3 h-3" />
                   </button>
@@ -396,7 +396,7 @@ export default function App() {
                         e.stopPropagation();
                         removeVault(v.id);
                       }}
-                      className="p-1.5 bg-hossted-sidebar border border-hossted-border rounded-lg hover:bg-hossted-border text-hossted-text-muted hover:text-red-500 transition-colors shadow-xl"
+                      className="p-1.5 bg-hossted-sidebar border border-hossted-sidebar-border rounded-lg hover:bg-hossted-sidebar-border text-hossted-sidebar-text-muted hover:text-red-500 transition-colors shadow-xl"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -413,7 +413,7 @@ export default function App() {
               setNewVaultColor("#2563eb");
               setIsAddModalOpen(true);
             }}
-            className="w-12 h-12 rounded-xl bg-hossted-sidebar border border-dashed border-hossted-border flex items-center justify-center text-hossted-text-muted hover:bg-hossted-border hover:text-hossted-text cursor-pointer transition-all"
+            className="w-12 h-12 rounded-xl bg-hossted-sidebar border border-dashed border-hossted-sidebar-border flex items-center justify-center text-hossted-sidebar-text-muted hover:bg-hossted-sidebar-border hover:text-hossted-sidebar-text cursor-pointer transition-all"
           >
             <Plus className="w-6 h-6" />
           </button>
@@ -431,34 +431,34 @@ export default function App() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="flex flex-col bg-hossted-sidebar border-r border-hossted-border overflow-hidden shrink-0"
+            className="flex flex-col bg-hossted-sidebar border-r border-hossted-sidebar-border overflow-hidden shrink-0 text-hossted-sidebar-text"
           >
             {/* Sidebar Header */}
-            <div className="p-4 flex items-center justify-between border-b border-hossted-border">
+            <div className="p-4 flex items-center justify-between border-b border-hossted-sidebar-border">
               <div className="flex items-center gap-3">
                 <div className="flex flex-col min-w-0">
                   <h1 className="font-bold text-sm truncate leading-tight">{vault.name}</h1>
-                  <span className="text-[10px] text-hossted-text-muted uppercase tracking-wider">Vault</span>
+                  <span className="text-[10px] text-hossted-sidebar-text-muted uppercase tracking-wider">Vault</span>
                 </div>
               </div>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
-                className="p-1 hover:bg-hossted-border rounded-md transition-colors"
+                className="p-1 hover:bg-hossted-sidebar-border rounded-md transition-colors"
               >
-                <PanelLeftClose className="w-4 h-4 text-hossted-text-muted" />
+                <PanelLeftClose className="w-4 h-4 text-hossted-sidebar-text-muted" />
               </button>
             </div>
 
             {/* Sidebar Search */}
-            <div className="p-2 border-b border-hossted-border">
+            <div className="p-2 border-b border-hossted-sidebar-border">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-hossted-text-muted" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-hossted-sidebar-text-muted" />
                 <input 
                   type="text"
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-hossted-dark border border-hossted-border rounded-md py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:border-hossted-primary transition-colors"
+                  className="w-full bg-white border border-hossted-sidebar-border rounded-md py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:border-hossted-primary transition-colors text-hossted-sidebar-text"
                 />
               </div>
             </div>
@@ -495,7 +495,7 @@ export default function App() {
             </div>
 
             {/* Sidebar Footer */}
-            <div className="p-3 border-t border-hossted-border flex items-center justify-between text-hossted-text-muted">
+            <div className="p-3 border-t border-hossted-sidebar-border flex items-center justify-between text-hossted-sidebar-text-muted">
               <div className="flex items-center gap-2 text-xs">
                 <Settings className="w-3.5 h-3.5" />
                 <span>Settings</span>
@@ -515,28 +515,28 @@ export default function App() {
         {!isSidebarOpen && (
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="absolute top-4 left-4 z-10 p-2 bg-hossted-sidebar border border-hossted-border rounded-md hover:bg-hossted-border transition-colors shadow-lg"
+            className="absolute top-4 left-4 z-10 p-2 bg-hossted-sidebar border border-hossted-sidebar-border rounded-md hover:bg-hossted-sidebar-border transition-colors shadow-lg"
           >
-            <PanelLeft className="w-4 h-4 text-hossted-text-muted" />
+            <PanelLeft className="w-4 h-4 text-hossted-sidebar-text-muted" />
           </button>
         )}
 
         {/* Tabs Bar */}
-        <div className="flex bg-hossted-sidebar/50 border-b border-hossted-border h-10 overflow-x-auto no-scrollbar">
+        <div className="flex bg-hossted-sidebar border-b border-hossted-sidebar-border h-10 overflow-x-auto no-scrollbar">
           {vault.openFiles.map(path => (
             <div
               key={path}
               onClick={() => openFile(path)}
               className={cn(
-                "flex items-center gap-2 px-4 h-full border-r border-hossted-border cursor-pointer transition-colors min-w-[120px] max-w-[200px]",
-                vault.activeFilePath === path ? "bg-hossted-dark border-t-2 border-t-hossted-primary" : "hover:bg-hossted-border/50 text-hossted-text-muted"
+                "flex items-center gap-2 px-4 h-full border-r border-hossted-sidebar-border cursor-pointer transition-colors min-w-[120px] max-w-[200px]",
+                vault.activeFilePath === path ? "bg-hossted-dark text-hossted-text border-t-2 border-t-hossted-primary" : "hover:bg-hossted-sidebar-border text-hossted-sidebar-text-muted"
               )}
             >
               <FileText className="w-3.5 h-3.5 shrink-0" />
               <span className="text-xs truncate flex-1">{path.split('/').pop()}</span>
               <button 
                 onClick={(e) => closeFile(e, path)}
-                className="p-0.5 hover:bg-hossted-border rounded transition-colors"
+                className="p-0.5 hover:bg-hossted-sidebar-border rounded transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -640,21 +640,21 @@ export default function App() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 300, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="flex flex-col bg-hossted-sidebar border-l border-hossted-border overflow-hidden shrink-0"
+            className="flex flex-col bg-hossted-sidebar border-l border-hossted-sidebar-border overflow-hidden shrink-0 text-hossted-sidebar-text"
           >
-            <div className="p-4 border-b border-hossted-border flex items-center justify-between">
+            <div className="p-4 border-b border-hossted-sidebar-border flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider">Metadata & Graph</span>
               <button 
                 onClick={() => setIsRightSidebarOpen(false)}
-                className="p-1 hover:bg-hossted-border rounded-md transition-colors"
+                className="p-1 hover:bg-hossted-sidebar-border rounded-md transition-colors"
               >
-                <X className="w-3.5 h-3.5 text-hossted-text-muted" />
+                <X className="w-3.5 h-3.5 text-hossted-sidebar-text-muted" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
               {/* Graph Visualizer */}
               <div className="space-y-2">
-                <h3 className="text-[10px] font-bold text-hossted-text-muted uppercase tracking-widest">Local Graph</h3>
+                <h3 className="text-[10px] font-bold text-hossted-sidebar-text-muted uppercase tracking-widest">Local Graph</h3>
                 <GraphVisualizer 
                   files={vault.files} 
                   activeFilePath={vault.activeFilePath} 
@@ -663,7 +663,7 @@ export default function App() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-[10px] font-bold text-hossted-text-muted uppercase tracking-widest">Backlinks</h3>
+                <h3 className="text-[10px] font-bold text-hossted-sidebar-text-muted uppercase tracking-widest">Backlinks</h3>
                 {backlinks.length > 0 ? (
                   <div className="space-y-1">
                     {backlinks.map(path => (
@@ -678,12 +678,12 @@ export default function App() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-xs text-hossted-text-muted italic">No backlinks found</div>
+                  <div className="text-xs text-hossted-sidebar-text-muted italic">No backlinks found</div>
                 )}
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-[10px] font-bold text-hossted-text-muted uppercase tracking-widest">Outgoing Links</h3>
+                <h3 className="text-[10px] font-bold text-hossted-sidebar-text-muted uppercase tracking-widest">Outgoing Links</h3>
                 {outgoingLinks.length > 0 ? (
                   <div className="space-y-1">
                     {outgoingLinks.map(path => (
@@ -698,12 +698,12 @@ export default function App() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-xs text-hossted-text-muted italic">No links found</div>
+                  <div className="text-xs text-hossted-sidebar-text-muted italic">No links found</div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-[10px] font-bold text-hossted-text-muted uppercase tracking-widest">Tags</h3>
+                <h3 className="text-[10px] font-bold text-hossted-sidebar-text-muted uppercase tracking-widest">Tags</h3>
                 <div className="flex flex-wrap gap-1">
                   <span className="px-2 py-0.5 bg-hossted-primary/10 text-hossted-primary rounded text-[10px]">#hossted</span>
                   <span className="px-2 py-0.5 bg-hossted-primary/10 text-hossted-primary rounded text-[10px]">#wiki</span>
@@ -723,9 +723,9 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-hossted-sidebar border border-hossted-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+              className="bg-hossted-sidebar border border-hossted-sidebar-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl text-hossted-sidebar-text"
             >
-              <div className="p-6 border-b border-hossted-border flex items-center justify-between">
+              <div className="p-6 border-b border-hossted-sidebar-border flex items-center justify-between">
                 <h2 className="text-xl font-bold">{isEditModalOpen ? 'Edit Technology' : 'Add New Technology'}</h2>
                 <button 
                   onClick={() => {
@@ -733,28 +733,28 @@ export default function App() {
                     setIsEditModalOpen(false);
                     setEditingVaultId(null);
                   }}
-                  className="p-2 hover:bg-hossted-border rounded-lg transition-colors"
+                  className="p-2 hover:bg-hossted-sidebar-border rounded-lg transition-colors"
                 >
-                  <X className="w-5 h-5 text-hossted-text-muted" />
+                  <X className="w-5 h-5 text-hossted-sidebar-text-muted" />
                 </button>
               </div>
 
               <div className="p-6 space-y-6">
                 {/* Name Input */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Technology Name</label>
+                  <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider">Technology Name</label>
                   <input 
                     type="text"
                     placeholder="e.g. Docker Guide"
                     value={newVaultName}
                     onChange={(e) => setNewVaultName(e.target.value)}
-                    className="w-full bg-hossted-dark border border-hossted-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-hossted-primary transition-colors"
+                    className="w-full bg-white border border-hossted-sidebar-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-hossted-primary transition-colors text-hossted-sidebar-text"
                   />
                 </div>
 
                 {/* Icon Selection */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Choose Icon</label>
+                  <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider">Choose Icon</label>
                   <div className="grid grid-cols-6 gap-2">
                     {AVAILABLE_ICONS.map(({ name, icon: Icon }) => (
                       <button
@@ -764,7 +764,7 @@ export default function App() {
                           "aspect-square flex items-center justify-center rounded-xl border transition-all",
                           newVaultIcon === name 
                             ? "bg-hossted-primary/20 border-hossted-primary text-hossted-primary" 
-                            : "bg-hossted-dark border-hossted-border text-hossted-text-muted hover:border-hossted-text-muted"
+                            : "bg-white border-hossted-sidebar-border text-hossted-sidebar-text-muted hover:border-hossted-sidebar-text-muted"
                         )}
                       >
                         <Icon className="w-5 h-5" />
@@ -775,7 +775,7 @@ export default function App() {
 
                 {/* Color Selection */}
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-hossted-text-muted uppercase tracking-wider">Choose Color</label>
+                  <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider">Choose Color</label>
                   <div className="flex flex-wrap gap-3">
                     {AVAILABLE_COLORS.map(color => (
                       <button
@@ -794,7 +794,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-6 bg-hossted-dark/50 border-t border-hossted-border">
+              <div className="p-6 bg-gray-50 border-t border-hossted-sidebar-border">
                 {isEditModalOpen ? (
                   <button 
                     onClick={updateVault}
@@ -814,7 +814,7 @@ export default function App() {
                         onChange={handleFolderUpload}
                       />
                     </label>
-                    <p className="text-[10px] text-hossted-text-muted text-center mt-3">
+                    <p className="text-[10px] text-hossted-sidebar-text-muted text-center mt-3">
                       Select your Obsidian vault folder to import all markdown files.
                     </p>
                   </>
@@ -851,13 +851,13 @@ function FileTreeItem({
       <div>
         <div 
           onClick={() => onToggleFolder(file.path)}
-          className="flex items-center gap-1.5 py-1 px-2 hover:bg-hossted-border/50 rounded-md cursor-pointer transition-colors group"
+          className="flex items-center gap-1.5 py-1 px-2 hover:bg-hossted-sidebar-border rounded-md cursor-pointer transition-colors group"
           style={{ paddingLeft: `${level * 12 + 8}px` }}
         >
           {isExpanded ? (
-            <ChevronDown className="w-3.5 h-3.5 text-hossted-text-muted" />
+            <ChevronDown className="w-3.5 h-3.5 text-hossted-sidebar-text-muted" />
           ) : (
-            <ChevronRight className="w-3.5 h-3.5 text-hossted-text-muted" />
+            <ChevronRight className="w-3.5 h-3.5 text-hossted-sidebar-text-muted" />
           )}
           <FolderOpen className="w-4 h-4 text-hossted-primary/70" />
           <span className="text-sm truncate">{file.name}</span>
@@ -886,11 +886,11 @@ function FileTreeItem({
       onClick={() => onOpenFile(file.path)}
       className={cn(
         "flex items-center gap-2 py-1 px-2 rounded-md cursor-pointer transition-colors group",
-        isActive ? "bg-hossted-primary/20 text-hossted-primary" : "hover:bg-hossted-border/50"
+        isActive ? "bg-hossted-primary/20 text-hossted-primary" : "hover:bg-hossted-sidebar-border"
       )}
       style={{ paddingLeft: `${level * 12 + 24}px` }}
     >
-      <FileText className={cn("w-3.5 h-3.5", isActive ? "text-hossted-primary" : "text-hossted-text-muted")} />
+      <FileText className={cn("w-3.5 h-3.5", isActive ? "text-hossted-primary" : "text-hossted-sidebar-text-muted")} />
       <span className="text-sm truncate">{file.name}</span>
     </div>
   );

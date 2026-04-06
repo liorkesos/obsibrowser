@@ -84,7 +84,7 @@ export function GraphVisualizer({ files, activeFilePath, onNodeClick }: GraphVis
       .force("collision", d3.forceCollide().radius(20));
 
     const link = svg.append("g")
-      .attr("stroke", "#334155")
+      .attr("stroke", "#cbd5e1")
       .attr("stroke-opacity", 0.6)
       .selectAll("line")
       .data(links)
@@ -119,11 +119,10 @@ export function GraphVisualizer({ files, activeFilePath, onNodeClick }: GraphVis
       .attr("x", 8)
       .attr("y", 4)
       .style("font-size", "10px")
-      .style("fill", "#f8fafc")
+      .style("fill", "#0f172a")
       .style("pointer-events", "none")
       .style("opacity", 0)
-      .style("font-weight", "500")
-      .style("text-shadow", "0 1px 2px rgba(0,0,0,0.8)");
+      .style("font-weight", "600");
 
     simulation.on("tick", () => {
       link
@@ -159,7 +158,7 @@ export function GraphVisualizer({ files, activeFilePath, onNodeClick }: GraphVis
   }, [nodes, links, onNodeClick]);
 
   return (
-    <div className="w-full h-[200px] bg-hossted-dark/50 rounded-lg border border-hossted-border overflow-hidden relative group">
+    <div className="w-full h-[200px] bg-gray-50 rounded-lg border border-hossted-sidebar-border overflow-hidden relative group">
       <svg ref={svgRef} className="w-full h-full" />
       <div className="absolute bottom-2 right-2 text-[8px] text-hossted-text-muted opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest pointer-events-none">
         Interactive Graph
