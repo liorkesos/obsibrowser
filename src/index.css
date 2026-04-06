@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-hossted-primary: #2563eb;
+  --color-hossted-secondary: #10b981;
+  --color-hossted-dark: #0f172a;
+  --color-hossted-sidebar: #1e293b;
+  --color-hossted-border: #334155;
+  --color-hossted-text: #f8fafc;
+  --color-hossted-text-muted: #94a3b8;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-hossted-dark text-hossted-text font-sans antialiased overflow-hidden;
+  }
+
+  /* Obsidian-like Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-hossted-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-hossted-text-muted/50;
+  }
+}
+
+/* Markdown Styling */
+.markdown-body {
+  @apply prose prose-invert max-w-none prose-headings:font-semibold prose-a:text-hossted-primary prose-code:text-hossted-secondary prose-pre:bg-hossted-sidebar prose-pre:border prose-pre:border-hossted-border;
+}
+
+.markdown-body h1 { @apply text-3xl mb-6 border-b border-hossted-border pb-2; }
+.markdown-body h2 { @apply text-2xl mt-8 mb-4 border-b border-hossted-border/50 pb-1; }
+.markdown-body h3 { @apply text-xl mt-6 mb-3; }
+.markdown-body p { @apply mb-4 leading-relaxed text-hossted-text/90; }
+.markdown-body ul { @apply list-disc pl-6 mb-4; }
+.markdown-body ol { @apply list-decimal pl-6 mb-4; }
+.markdown-body li { @apply mb-1; }
+.markdown-body blockquote { @apply border-l-4 border-hossted-primary pl-4 italic text-hossted-text-muted; }
+.markdown-body code { @apply bg-hossted-sidebar px-1 rounded text-sm font-mono; }
+.markdown-body pre { @apply p-4 rounded-lg overflow-x-auto my-4; }
+.markdown-body img { @apply rounded-lg shadow-lg my-6 max-w-full; }
+.markdown-body table { @apply w-full border-collapse my-6; }
+.markdown-body th { @apply bg-hossted-sidebar border border-hossted-border p-2 text-left; }
+.markdown-body td { @apply border border-hossted-border p-2; }

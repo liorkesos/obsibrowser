@@ -1,0 +1,5 @@
+{
+  "name": "Hossted Wiki - Obsidian Web Viewer",
+  "description": "A high-performance, Obsidian-mimicking web viewer for technology wikis, branded with Hossted design system. Supports vault uploads and markdown navigation.",
+  "requestFramePermissions": []
+}
