@@ -15,16 +15,6 @@ import {
   BookOpen,
   Terminal,
   Cpu,
-  Database,
-  Cloud,
-  Layers,
-  Globe,
-  Server,
-  Shield,
-  Zap,
-  Box,
-  Layout,
-  Code,
   MoreVertical,
   Edit2,
   Trash2
@@ -41,7 +31,6 @@ import { GraphVisualizer } from './components/GraphVisualizer';
 const INITIAL_VAULT: VaultState = {
   id: "initial-vault",
   name: "Hossted Tech Wiki",
-  icon: "Database",
   color: "#2563eb",
   files: [
     {
@@ -74,21 +63,6 @@ const INITIAL_VAULT: VaultState = {
   openFiles: ["Getting Started.md"]
 };
 
-const AVAILABLE_ICONS = [
-  { name: 'Database', icon: Database },
-  { name: 'Server', icon: Server },
-  { name: 'Cloud', icon: Cloud },
-  { name: 'Shield', icon: Shield },
-  { name: 'Zap', icon: Zap },
-  { name: 'Box', icon: Box },
-  { name: 'Layers', icon: Layers },
-  { name: 'Globe', icon: Globe },
-  { name: 'Terminal', icon: Terminal },
-  { name: 'Cpu', icon: Cpu },
-  { name: 'Layout', icon: Layout },
-  { name: 'Code', icon: Code },
-];
-
 const AVAILABLE_COLORS = [
   '#2563eb', // Blue
   '#10b981', // Green
@@ -100,6 +74,15 @@ const AVAILABLE_COLORS = [
   '#f97316', // Orange
 ];
 
+const getInitials = (name: string) => {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
+
 export default function App() {
   const [vaults, setVaults] = useState<VaultState[]>([INITIAL_VAULT]);
   const [activeVaultId, setActiveVaultId] = useState<string>(INITIAL_VAULT.id);
@@ -109,7 +92,6 @@ export default function App() {
   const [editingVaultId, setEditingVaultId] = useState<string | null>(null);
   
   const [newVaultName, setNewVaultName] = useState("");
-  const [newVaultIcon, setNewVaultIcon] = useState("Database");
   const [newVaultColor, setNewVaultColor] = useState("#2563eb");
 
   const vault = useMemo(() => 
@@ -123,7 +105,6 @@ export default function App() {
   useEffect(() => {
     if (editingVault) {
       setNewVaultName(editingVault.name);
-      setNewVaultIcon(editingVault.icon);
       setNewVaultColor(editingVault.color);
     }
   }, [editingVault]);
@@ -225,7 +206,6 @@ export default function App() {
     setVaults(prev => prev.map(v => v.id === editingVaultId ? {
       ...v,
       name: newVaultName,
-      icon: newVaultIcon,
       color: newVaultColor
     } : v));
     setIsEditModalOpen(false);
@@ -297,7 +277,6 @@ export default function App() {
     const newVault: VaultState = {
       id: newVaultId,
       name: newVaultName || vaultName,
-      icon: newVaultIcon,
       color: newVaultColor,
       files: root,
       activeFilePath: root[0]?.type === 'file' ? root[0].path : (root[0]?.children?.[0]?.path || null),
@@ -348,24 +327,24 @@ export default function App() {
         
         <div className="flex-1 flex flex-col items-center gap-4 w-full px-2">
           {vaults.map(v => {
-            const IconComponent = AVAILABLE_ICONS.find(i => i.name === v.icon)?.icon || Database;
             return (
               <div key={v.id} className="relative group/vault">
                 <button
                   onClick={() => setActiveVaultId(v.id)}
                   title={v.name}
                   className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative border border-hossted-border",
+                    "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group relative border-4",
                     activeVaultId === v.id 
-                      ? "text-white shadow-lg border-transparent" 
-                      : "bg-hossted-sidebar text-hossted-text-muted hover:bg-hossted-border hover:text-hossted-text"
+                      ? "shadow-lg scale-105" 
+                      : "opacity-80 hover:opacity-100"
                   )}
                   style={{ 
-                    backgroundColor: activeVaultId === v.id ? v.color : undefined,
+                    backgroundColor: '#000000', // Black background
+                    borderColor: v.color, // Chosen color for border
                     boxShadow: activeVaultId === v.id ? `0 10px 15px -3px ${v.color}33` : undefined
                   }}
                 >
-                  <IconComponent className="w-6 h-6" />
+                  <span className="text-white font-bold text-sm tracking-tighter">{getInitials(v.name)}</span>
                   {activeVaultId === v.id && (
                     <motion.div 
                       layoutId="active-vault-indicator"
@@ -409,7 +388,6 @@ export default function App() {
           <button 
             onClick={() => {
               setNewVaultName("");
-              setNewVaultIcon("Database");
               setNewVaultColor("#2563eb");
               setIsAddModalOpen(true);
             }}
@@ -436,6 +414,12 @@ export default function App() {
             {/* Sidebar Header */}
             <div className="p-4 flex items-center justify-between border-b border-hossted-sidebar-border">
               <div className="flex items-center gap-3">
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center border-2 shrink-0"
+                  style={{ backgroundColor: '#000000', borderColor: vault.color }}
+                >
+                  <span className="text-white font-bold text-[10px] tracking-tighter">{getInitials(vault.name)}</span>
+                </div>
                 <div className="flex flex-col min-w-0">
                   <h1 className="font-bold text-sm truncate leading-tight">{vault.name}</h1>
                   <span className="text-[10px] text-hossted-sidebar-text-muted uppercase tracking-wider">Vault</span>
@@ -740,6 +724,20 @@ export default function App() {
               </div>
 
               <div className="p-6 space-y-6">
+                {/* Logo Preview */}
+                <div className="flex flex-col items-center justify-center py-4">
+                  <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider mb-4">Logo Preview</label>
+                  <div 
+                    className="w-20 h-20 rounded-2xl flex items-center justify-center border-4 shadow-xl transition-all duration-300"
+                    style={{ 
+                      backgroundColor: '#000000',
+                      borderColor: newVaultColor,
+                    }}
+                  >
+                    <span className="text-white font-bold text-2xl tracking-tighter">{getInitials(newVaultName) || "?"}</span>
+                  </div>
+                </div>
+
                 {/* Name Input */}
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider">Technology Name</label>
@@ -750,27 +748,6 @@ export default function App() {
                     onChange={(e) => setNewVaultName(e.target.value)}
                     className="w-full bg-white border border-hossted-sidebar-border rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-hossted-primary transition-colors text-hossted-sidebar-text"
                   />
-                </div>
-
-                {/* Icon Selection */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-hossted-sidebar-text-muted uppercase tracking-wider">Choose Icon</label>
-                  <div className="grid grid-cols-6 gap-2">
-                    {AVAILABLE_ICONS.map(({ name, icon: Icon }) => (
-                      <button
-                        key={name}
-                        onClick={() => setNewVaultIcon(name)}
-                        className={cn(
-                          "aspect-square flex items-center justify-center rounded-xl border transition-all",
-                          newVaultIcon === name 
-                            ? "bg-hossted-primary/20 border-hossted-primary text-hossted-primary" 
-                            : "bg-white border-hossted-sidebar-border text-hossted-sidebar-text-muted hover:border-hossted-sidebar-text-muted"
-                        )}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Color Selection */}
